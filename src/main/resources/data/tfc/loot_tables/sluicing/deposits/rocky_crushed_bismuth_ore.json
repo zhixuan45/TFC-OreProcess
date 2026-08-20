@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:fishing",
+  "pools": [
+    {
+      "name": "crushed",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "tfc_oreprocess:crushed_bismuth_ore",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "rock",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "tfc:rock/loose/andesite",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "dirty_pile",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "tfc_oreprocess:dirty_pile_bismuth_ore",
+          "weight": 1,
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.25
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

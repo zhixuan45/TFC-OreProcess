@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:zinc_ore_pellet_100mb"
+    }
+  ],
+  "result": {
+    "id": "tfc_oreprocess:zinc_ore_pellet_25mb",
+    "count": 4
+  }
+}

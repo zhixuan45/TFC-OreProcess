@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:osmium_ore_pellet_100mb"
+    }
+  ],
+  "result": {
+    "id": "tfc_oreprocess:osmium_ore_pellet_25mb",
+    "count": 4
+  }
+}

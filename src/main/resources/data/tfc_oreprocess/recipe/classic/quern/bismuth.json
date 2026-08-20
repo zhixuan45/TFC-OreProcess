@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "tfc_oreprocess:pipeline_mode",
+      "mode": "template_classic"
+    }
+  ],
+  "type": "tfc:quern",
+  "ingredient": {
+    "item": "tfc_oreprocess:crushed_bismuth_ore"
+  },
+  "result": {
+    "item": "tfc_oreprocess:dirty_dust_bismuth_ore",
+    "count": 1
+  }
+}

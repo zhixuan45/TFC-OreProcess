@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:limonite_ore_pellet_25mb"
+    }
+  ],
+  "result": {
+    "id": "tfc_oreprocess:limonite_ore_powder",
+    "count": 4
+  }
+}

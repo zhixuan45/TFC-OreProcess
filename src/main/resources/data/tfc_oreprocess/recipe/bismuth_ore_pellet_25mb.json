@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:bismuth_ore_powder"
+    },
+    {
+      "item": "tfc_oreprocess:bismuth_ore_powder"
+    },
+    {
+      "item": "tfc_oreprocess:bismuth_ore_powder"
+    },
+    {
+      "item": "tfc_oreprocess:bismuth_ore_powder"
+    }
+  ],
+  "result": {
+    "id": "tfc_oreprocess:bismuth_ore_pellet_25mb",
+    "count": 1
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "tfc_oreprocess:item/dirty_dust_uraninite_ore"
+  }
+}

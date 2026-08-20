@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekatfc"
+    }
+  ],
+  "type": "tfc_oreprocess:ore_crushing",
+  "ingredient": {
+    "item": "mekatfc:ore/normal_native_osmium"
+  },
+  "result": {
+    "id": "tfc_oreprocess:rocky_crushed_osmium_ore",
+    "count": 1
+  }
+}

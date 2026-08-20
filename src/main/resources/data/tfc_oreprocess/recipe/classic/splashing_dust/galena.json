@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "tfc_oreprocess:pipeline_mode",
+      "mode": "template_classic"
+    }
+  ],
+  "type": "create:splashing",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:dirty_dust_galena_ore"
+    }
+  ],
+  "results": [
+    {
+      "item": "tfc_oreprocess:galena_ore_powder"
+    },
+    {
+      "item": "tfc:sand/black"
+    },
+    {
+      "item": "tfc_oreprocess:dirty_pile_galena_ore",
+      "chance": 0.15
+    }
+  ],
+  "processingTime": 1200
+}

@@ -1,0 +1,19 @@
+[
+  {"id":"copper","source":"tfc:ore/normal_native_copper","fluid":"tfc:metal/copper","amount":25,"temperature":1080.0,"required":true},
+  {"id":"gold","source":"tfc:ore/normal_native_gold","fluid":"tfc:metal/gold","amount":25,"temperature":1060.0,"required":true},
+  {"id":"silver","source":"tfc:ore/normal_native_silver","fluid":"tfc:metal/silver","amount":25,"temperature":961.0,"required":true},
+  {"id":"tin","source":"tfc:ore/normal_cassiterite","fluid":"tfc:metal/tin","amount":25,"temperature":230.0,"required":true},
+  {"id":"bismuth","source":"tfc:ore/normal_bismuthinite","fluid":"tfc:metal/bismuth","amount":25,"temperature":270.0,"required":true},
+  {"id":"zinc","source":"tfc:ore/normal_sphalerite","fluid":"tfc:metal/zinc","amount":25,"temperature":420.0,"required":true},
+  {"id":"iron","source":"tfc:ore/normal_hematite","fluid":"tfc:metal/cast_iron","amount":25,"temperature":1535.0,"required":true},
+  {"id":"nickel","source":"tfc:ore/normal_garnierite","fluid":"tfc:metal/nickel","amount":25,"temperature":1453.0,"required":true},
+  {"id":"limonite","source":"tfc:ore/normal_limonite","fluid":"tfc:metal/cast_iron","amount":25,"temperature":1535.0,"required":true},
+  {"id":"magnetite","source":"tfc:ore/normal_magnetite","fluid":"tfc:metal/cast_iron","amount":25,"temperature":1535.0,"required":true},
+  {"id":"malachite","source":"tfc:ore/normal_malachite","fluid":"tfc:metal/copper","amount":25,"temperature":1080.0,"required":true},
+  {"id":"tetrahedrite","source":"tfc:ore/normal_tetrahedrite","fluid":"tfc:metal/copper","amount":25,"temperature":1080.0,"required":true},
+  {"id":"galena","source":"tfc:ore/normal_galena","fluid":"tfc:metal/lead","amount":25,"temperature":327.0,"required":false},
+  {"id":"bauxite","source":"tfc:ore/normal_bauxite","fluid":"tfc:metal/aluminum","amount":25,"temperature":660.0,"required":false},
+  {"id":"chromite","source":"tfc:ore/normal_chromite","fluid":"tfc:metal/chromium","amount":25,"temperature":1907.0,"required":false},
+  {"id":"uraninite","source":"tfc:ore/normal_uraninite","fluid":"tfc:metal/uranium","amount":25,"temperature":1132.0,"required":false},
+  {"id":"osmium","source":"mekatfc:ore/normal_native_osmium","fluid":"mekatfc:metal/osmium","amount":25,"temperature":1540.0,"required":false}
+]

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "tfc_oreprocess:item/rocky_crushed_bismuth_ore"
+  }
+}

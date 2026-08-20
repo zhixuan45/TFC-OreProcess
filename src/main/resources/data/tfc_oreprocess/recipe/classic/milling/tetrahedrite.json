@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "tfc_oreprocess:pipeline_mode",
+      "mode": "template_classic"
+    }
+  ],
+  "type": "create:milling",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:crushed_tetrahedrite_ore"
+    }
+  ],
+  "results": [
+    {
+      "item": "tfc_oreprocess:dirty_dust_tetrahedrite_ore"
+    }
+  ],
+  "processingTime": 100
+}

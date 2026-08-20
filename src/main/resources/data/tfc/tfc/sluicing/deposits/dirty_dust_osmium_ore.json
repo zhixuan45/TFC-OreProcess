@@ -1,0 +1,6 @@
+{
+  "ingredient": {
+    "item": "tfc_oreprocess:dirty_dust_osmium_ore"
+  },
+  "loot_table": "tfc:sluicing/deposits/dirty_dust_osmium_ore"
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:malachite_ore_pellet_25mb"
+    },
+    {
+      "item": "tfc_oreprocess:malachite_ore_pellet_25mb"
+    },
+    {
+      "item": "tfc_oreprocess:malachite_ore_pellet_25mb"
+    },
+    {
+      "item": "tfc_oreprocess:malachite_ore_pellet_25mb"
+    }
+  ],
+  "result": {
+    "id": "tfc_oreprocess:malachite_ore_pellet_100mb",
+    "count": 1
+  }
+}

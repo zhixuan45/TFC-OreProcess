@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "tfc_oreprocess:pipeline_mode",
+      "mode": "template_classic"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tfc_oreprocess:dirty_dust_nickel_ore"
+    }
+  ],
+  "result": {
+    "id": "tfc_oreprocess:dirty_pile_nickel_ore",
+    "count": 4
+  }
+}

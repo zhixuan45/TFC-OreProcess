@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone"
+    }
+  },
+  "pattern": [
+    " S ",
+    "RHR",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "tfc_oreprocess:alloy_assistant"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "ingredient": {
+    "item": "tfc_oreprocess:rocky_crushed_tin_ore"
+  },
+  "loot_table": "tfc:sluicing/deposits/rocky_crushed_tin_ore"
+}

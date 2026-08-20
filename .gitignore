@@ -1,0 +1,35 @@
+# Gradle 构建与缓存
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Minecraft 运行时生成文件（客户端/服务端测试生成的存档、日志、资源等）
+run/
+
+# IDE 与编辑器配置
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+out/
+bin/
+
+# 编译产物与 Jar 包（排除 gradle wrapper jar）
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# 临时文件与日志
+tmp/
+.codex-tmp/
+*.log
+tools/classes/
+hsperfdata_*/
+
+# 操作系统自动生成文件
+.DS_Store
+Thumbs.db
