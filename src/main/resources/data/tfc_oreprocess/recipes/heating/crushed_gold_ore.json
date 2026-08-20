@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:crushed_gold_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  20,
+                         "fluid":  "tfc:metal/gold"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1060
+}

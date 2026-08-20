@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:tetrahedrite_ore_pellet_25mb"
+                   },
+    "result_fluid":  {
+                         "amount":  25,
+                         "fluid":  "tfc:metal/copper"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1080
+}

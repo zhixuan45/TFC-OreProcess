@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:dirty_dust_tin_ore"
+                   },
+    "heat_capacity":  0.1
+}

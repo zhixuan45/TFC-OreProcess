@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:rocky_crushed_limonite_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  15,
+                         "fluid":  "tfc:metal/cast_iron"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1535
+}

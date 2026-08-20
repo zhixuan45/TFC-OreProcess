@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:magnetite_ore_pellet_25mb"
+                   },
+    "result_fluid":  {
+                         "amount":  25,
+                         "fluid":  "tfc:metal/cast_iron"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1535
+}

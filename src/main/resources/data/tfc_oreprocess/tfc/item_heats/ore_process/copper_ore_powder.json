@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:copper_ore_powder"
+                   },
+    "heat_capacity":  0.1428
+}

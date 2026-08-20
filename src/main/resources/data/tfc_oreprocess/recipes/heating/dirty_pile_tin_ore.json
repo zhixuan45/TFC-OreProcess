@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:dirty_pile_tin_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  5,
+                         "fluid":  "tfc:metal/tin"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  230
+}

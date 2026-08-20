@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:crushed_uraninite_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  20,
+                         "fluid":  "tfc:metal/uranium"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1132
+}

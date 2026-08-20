@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:crushed_malachite_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  20,
+                         "fluid":  "tfc:metal/copper"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1080
+}

@@ -464,8 +464,10 @@ def generateFixedOreResources = tasks.register('generateFixedOreResources') {
                     )
                 }
 
-                // 新版为每种矿物注册独立物品 ID，因此中间产物都需要自己的 TFC 加热配方（带岩粗碎矿 5mB、碎矿 5mB、矿粉 5mB、小矿团 25mB、大矿团 100mB）。
+                // 新版为每种矿物注册独立物品 ID，因此各级加工产物都需要自己的 TFC 加热熔化配方。
                 def rockyCrushedOre = "${fixedOreModId}:rocky_crushed_${material.id}_ore"
+                def dirtyDustOre = "${fixedOreModId}:dirty_dust_${material.id}_ore"
+                def dirtyPileOre = "${fixedOreModId}:dirty_pile_${material.id}_ore"
                 def heatingDir = new File(recipeDir, 'heating')
                 heatingDir.mkdirs()
                 def heatingRecipe = { String inputItem, int outputAmount ->
@@ -479,6 +481,8 @@ def generateFixedOreResources = tasks.register('generateFixedOreResources') {
                 [
                     ("rocky_crushed_${material.id}_ore.json"): heatingRecipe(rockyCrushedOre, 5),
                     ("crushed_${material.id}_ore.json"): heatingRecipe(crushedOre, 5),
+                    ("dirty_dust_${material.id}_ore.json"): heatingRecipe(dirtyDustOre, 20),
+                    ("dirty_pile_${material.id}_ore.json"): heatingRecipe(dirtyPileOre, 5),
                     ("${material.id}_ore_powder.json"): heatingRecipe(powder, 5),
                     ("${material.id}_ore_pellet_25mb.json"): heatingRecipe(pellet25, 25),
                     ("${material.id}_ore_pellet_100mb.json"): heatingRecipe(pellet100, 100)
@@ -487,17 +491,44 @@ def generateFixedOreResources = tasks.register('generateFixedOreResources') {
                         groovy.json.JsonOutput.toJson(recipeData)
                     )
                 }
+
+                // 为每种矿物生成 TFC item_heat 数据，注册热容和锻造/焊接温度，使其能够被塞入坩埚、小型容器与锻炉中加热。
+                def itemHeatDir = new File(fixedOreResourceRoot, "data/${fixedOreModId}/tfc/item_heat")
+                itemHeatDir.mkdirs()
+                def forgingTemp = (material.temperature * 0.60).round(1)
+                def weldingTemp = (material.temperature * 0.80).round(1)
+                def itemHeatData = [
+                    ingredient: [
+                        [item: rockyCrushedOre],
+                        [item: crushedOre],
+                        [item: dirtyDustOre],
+                        [item: dirtyPileOre],
+                        [item: powder],
+                        [item: pellet25],
+                        [item: pellet100]
+                    ],
+                    heat_capacity: 1.1428572,
+                    forging_temperature: forgingTemp,
+                    welding_temperature: weldingTemp
+                ]
+                new File(itemHeatDir, "${material.id}.json").text = groovy.json.JsonOutput.prettyPrint(
+                    groovy.json.JsonOutput.toJson(itemHeatData)
+                )
             }
 
             // 通用物品语言补全
             en["item.${fixedOreModId}.rocky_crushed_ore"] = "Rocky Crushed Ore"
             en["item.${fixedOreModId}.crushed_ore"] = "Crushed Ore"
+            en["item.${fixedOreModId}.dirty_dust_ore"] = "Dirty Dust Ore"
+            en["item.${fixedOreModId}.dirty_pile_ore"] = "Dirty Pile Ore"
             en["item.${fixedOreModId}.ore_powder"] = "Ore Powder"
             en["item.${fixedOreModId}.ore_pellet_25mb"] = "Ore Pellet (25 mB)"
             en["item.${fixedOreModId}.ore_pellet_100mb"] = "Ore Briquet (100 mB)"
 
             zh["item.${fixedOreModId}.rocky_crushed_ore"] = "带岩粗碎矿"
             zh["item.${fixedOreModId}.crushed_ore"] = "碎矿"
+            zh["item.${fixedOreModId}.dirty_dust_ore"] = "精碎矿"
+            zh["item.${fixedOreModId}.dirty_pile_ore"] = "残碎矿"
             zh["item.${fixedOreModId}.ore_powder"] = "矿粉"
             zh["item.${fixedOreModId}.ore_pellet_25mb"] = "矿团（25 mB）"
             zh["item.${fixedOreModId}.ore_pellet_100mb"] = "矿团（100 mB）"
@@ -517,6 +548,8 @@ def generateFixedOreResources = tasks.register('generateFixedOreResources') {
             [
                 'dynamic_rocky_crushed_ore.json': dynamicHeatingRecipe('rocky_crushed_ore', 5),
                 'dynamic_crushed_ore.json': dynamicHeatingRecipe('crushed_ore', 5),
+                'dynamic_dirty_dust_ore.json': dynamicHeatingRecipe('dirty_dust_ore', 20),
+                'dynamic_dirty_pile_ore.json': dynamicHeatingRecipe('dirty_pile_ore', 5),
                 'dynamic_ore_powder.json': dynamicHeatingRecipe('ore_powder', 5),
                 'dynamic_ore_pellet_25mb.json': dynamicHeatingRecipe('ore_pellet_25mb', 25),
                 'dynamic_ore_pellet_100mb.json': dynamicHeatingRecipe('ore_pellet_100mb', 100)
@@ -525,6 +558,28 @@ def generateFixedOreResources = tasks.register('generateFixedOreResources') {
                     groovy.json.JsonOutput.toJson(recipeData)
                 )
             }
+
+            // 生成通用物品的 TFC item_heat 属性定义
+            def genericItemHeatDir = new File(fixedOreResourceRoot, "data/${fixedOreModId}/tfc/item_heat")
+            genericItemHeatDir.mkdirs()
+            def genericHeatData = [
+                ingredient: [
+                    [item: "${fixedOreModId}:rocky_crushed_ore"],
+                    [item: "${fixedOreModId}:crushed_ore"],
+                    [item: "${fixedOreModId}:dirty_dust_ore"],
+                    [item: "${fixedOreModId}:dirty_pile_ore"],
+                    [item: "${fixedOreModId}:ore_powder"],
+                    [item: "${fixedOreModId}:ore_pellet_25mb"],
+                    [item: "${fixedOreModId}:ore_pellet_100mb"]
+                ],
+                heat_capacity: 1.1428572,
+                forging_temperature: 648.0,
+                welding_temperature: 864.0
+            ]
+            new File(genericItemHeatDir, "generic.json").text = groovy.json.JsonOutput.prettyPrint(
+                groovy.json.JsonOutput.toJson(genericHeatData)
+            )
+
             // 所有矿物合并完成后只写一次，保留完整语言表。
             new File(langDir, 'en_us.json').text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(en))
             new File(langDir, 'zh_cn.json').text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(zh))

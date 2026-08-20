@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:dirty_dust_iron_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  20,
+                         "fluid":  "tfc:metal/cast_iron"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1535
+}

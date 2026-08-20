@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:osmium_ore_pellet_100mb"
+                   },
+    "result_fluid":  {
+                         "amount":  100,
+                         "fluid":  "mekatfc:metal/osmium"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1540
+}

@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:crushed_nickel_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  20,
+                         "fluid":  "tfc:metal/nickel"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1453
+}

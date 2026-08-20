@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:silver_ore_pellet_25mb"
+                   },
+    "result_fluid":  {
+                         "amount":  25,
+                         "fluid":  "tfc:metal/silver"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  961
+}

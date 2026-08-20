@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:nickel_ore_powder"
+                   },
+    "result_fluid":  {
+                         "amount":  5,
+                         "fluid":  "tfc:metal/nickel"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1453
+}

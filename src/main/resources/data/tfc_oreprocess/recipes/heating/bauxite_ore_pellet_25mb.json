@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:bauxite_ore_pellet_25mb"
+                   },
+    "result_fluid":  {
+                         "amount":  25,
+                         "fluid":  "tfc:metal/aluminum"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  660
+}

@@ -36,7 +36,7 @@ public class AlloyAssistantMenu extends AbstractContainerMenu {
             containerId,
             playerInventory,
             extraData.readBlockPos(),
-            new SimpleContainerData(6)
+            new SimpleContainerData(7)
         );
     }
 
@@ -135,6 +135,10 @@ public class AlloyAssistantMenu extends AbstractContainerMenu {
 
     public boolean isAutoFeedEnabled() {
         return data.get(5) != 0;
+    }
+
+    public int getTargetRecipeIndex() {
+        return data.get(6);
     }
 
     @Override

@@ -66,6 +66,8 @@ public final class Tfc_oreprocess {
         ModRecipes.RECIPE_SERIALIZERS.register(modEventBus);
         ModConditions.CONDITION_CODECS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
+        modEventBus.addListener(org.shengxi.TFCOreProcess.tfc_oreprocess.network.ModPackets::register);
+        modEventBus.addListener(org.shengxi.TFCOreProcess.tfc_oreprocess.client.ClientModEvents::registerScreens);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 }

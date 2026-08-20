@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:dirty_dust_bauxite_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  20,
+                         "fluid":  "tfc:metal/aluminum"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  660
+}

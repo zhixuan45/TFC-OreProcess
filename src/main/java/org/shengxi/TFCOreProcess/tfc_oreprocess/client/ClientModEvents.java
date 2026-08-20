@@ -12,7 +12,6 @@ import org.shengxi.TFCOreProcess.tfc_oreprocess.registry.ModMenus;
  * 客户端模组事件监听器。
  * 负责注册 GUI 屏幕与其他客户端渲染组件。
  */
-@EventBusSubscriber(modid = Tfc_oreprocess.MODID, value = Dist.CLIENT)
 public final class ClientModEvents {
     private ClientModEvents() {
     }

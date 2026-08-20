@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:rocky_crushed_zinc_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  15,
+                         "fluid":  "tfc:metal/zinc"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  420
+}

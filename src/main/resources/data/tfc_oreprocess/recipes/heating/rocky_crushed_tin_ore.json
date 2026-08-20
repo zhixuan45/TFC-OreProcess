@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:rocky_crushed_tin_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  15,
+                         "fluid":  "tfc:metal/tin"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  230
+}

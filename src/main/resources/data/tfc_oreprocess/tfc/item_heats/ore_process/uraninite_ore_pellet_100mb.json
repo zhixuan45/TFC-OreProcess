@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:uraninite_ore_pellet_100mb"
+                   },
+    "heat_capacity":  0.5
+}

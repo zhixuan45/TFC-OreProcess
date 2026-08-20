@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:crushed_zinc_ore"
+                   },
+    "heat_capacity":  0.16
+}

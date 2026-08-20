@@ -9,7 +9,6 @@ import org.shengxi.TFCOreProcess.tfc_oreprocess.Tfc_oreprocess;
 /**
  * 模组网络数据包注册器。
  */
-@EventBusSubscriber(modid = Tfc_oreprocess.MODID)
 public final class ModPackets {
     private ModPackets() {
     }

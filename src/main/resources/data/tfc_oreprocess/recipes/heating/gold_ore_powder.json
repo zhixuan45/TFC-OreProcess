@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:gold_ore_powder"
+                   },
+    "result_fluid":  {
+                         "amount":  5,
+                         "fluid":  "tfc:metal/gold"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1060
+}

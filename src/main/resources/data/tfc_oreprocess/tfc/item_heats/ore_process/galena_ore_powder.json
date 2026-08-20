@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:galena_ore_powder"
+                   },
+    "heat_capacity":  0.0175
+}

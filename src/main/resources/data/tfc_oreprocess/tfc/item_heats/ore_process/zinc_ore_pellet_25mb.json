@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:zinc_ore_pellet_25mb"
+                   },
+    "heat_capacity":  0.2
+}

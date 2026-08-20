@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:rocky_crushed_copper_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  15,
+                         "fluid":  "tfc:metal/copper"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1080
+}

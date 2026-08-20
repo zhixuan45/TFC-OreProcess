@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:tetrahedrite_ore_powder"
+                   },
+    "result_fluid":  {
+                         "amount":  5,
+                         "fluid":  "tfc:metal/copper"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1080
+}

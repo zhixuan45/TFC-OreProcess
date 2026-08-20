@@ -1,5 +1,6 @@
 package org.shengxi.TFCOreProcess.tfc_oreprocess.alloy;
 
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.dries007.tfc.common.blockentities.CrucibleBlockEntity;
 import net.dries007.tfc.common.recipes.AlloyRecipe;
 import net.dries007.tfc.common.recipes.HeatingRecipe;
@@ -23,11 +24,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 import org.shengxi.TFCOreProcess.tfc_oreprocess.registry.ModBlockEntities;
@@ -69,6 +78,7 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
                 case 3 -> config.getTargetBatchAmount();
                 case 4 -> config.getRedstoneMode().ordinal();
                 case 5 -> config.isAutoFeedEnabled() ? 1 : 0;
+                case 6 -> getTargetRecipeIndex();
                 default -> 0;
             };
         }
@@ -86,14 +96,37 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
                     }
                 }
                 case 5 -> config.setAutoFeedEnabled(value != 0);
+                case 6 -> setTargetRecipeByIndex(value);
             }
         }
 
         @Override
         public int getCount() {
-            return 6;
+            return 7;
         }
     };
+
+    public int getTargetRecipeIndex() {
+        if (level == null || config.getTargetRecipeId() == null) {
+            return 0;
+        }
+        List<RecipeHolder<AlloyRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(TFCRecipeTypes.ALLOY.get());
+        for (int i = 0; i < recipes.size(); i++) {
+            if (recipes.get(i).id().equals(config.getTargetRecipeId())) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public void setTargetRecipeByIndex(int index) {
+        if (level == null) return;
+        List<RecipeHolder<AlloyRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(TFCRecipeTypes.ALLOY.get());
+        if (index >= 0 && index < recipes.size()) {
+            config.setTargetRecipeId(recipes.get(index).id());
+            setChanged();
+        }
+    }
 
     public AlloyAssistantBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ALLOY_ASSISTANT.get(), pos, state);
@@ -126,16 +159,16 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
         boolean pulseTriggered = powered && !entity.lastPoweredState;
         entity.lastPoweredState = powered;
 
-        // 检测红石触发条件
+        // 检查红石触发条件
         boolean shouldRun = switch (entity.config.getRedstoneMode()) {
             case IGNORE -> entity.config.isAutoFeedEnabled();
             case REQUIRE_SIGNAL -> powered && entity.config.isAutoFeedEnabled();
             case PULSE_ONCE -> pulseTriggered;
         };
 
-        // 检查下方是否为坩埚
-        BlockEntity belowBe = level.getBlockEntity(pos.below());
-        if (!(belowBe instanceof CrucibleBlockEntity crucible)) {
+        // 自动发现相邻坩埚（优先正下方，其次相邻水平方向）
+        CrucibleBlockEntity crucible = entity.findCrucible(level, pos);
+        if (crucible == null) {
             entity.solverStatusOrdinal = AlloyAssistantSolver.SolveStatus.NO_MATERIALS.ordinal();
             entity.currentCrucibleAmount = 0;
             entity.currentCrucibleTemp = 0;
@@ -144,8 +177,25 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
         }
 
         FluidAlloy crucibleAlloy = crucible.getAlloy();
-        entity.currentCrucibleAmount = crucibleAlloy != null ? crucibleAlloy.getAmount() : 0;
+        int liquidAmount = crucibleAlloy != null ? crucibleAlloy.getAmount() : 0;
         entity.currentCrucibleTemp = (int) crucible.getTemperature();
+
+        // 收集坩埚内所有金属成分（包括已熔化的液体和槽内待熔化的固体金属当量）
+        Map<Fluid, Integer> crucibleFluids = entity.collectCrucibleFluids(crucible);
+        int totalEffectiveMb = 0;
+        for (int val : crucibleFluids.values()) {
+            totalEffectiveMb += val;
+        }
+        entity.currentCrucibleAmount = totalEffectiveMb;
+
+        // 若尚未指定配方，自动从可用配方库中选取首个配方作为默认配方
+        if (entity.config.getTargetRecipeId() == null) {
+            List<RecipeHolder<AlloyRecipe>> allRecipes = level.getRecipeManager().getAllRecipesFor(TFCRecipeTypes.ALLOY.get());
+            if (!allRecipes.isEmpty()) {
+                entity.config.setTargetRecipeId(allRecipes.get(0).id());
+                entity.setChanged();
+            }
+        }
 
         if (!shouldRun || entity.config.getTargetRecipeId() == null) {
             entity.updateActiveState(state, false);
@@ -161,19 +211,28 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
             return;
         }
 
-        // 收集可用原料
-        List<AlloyAssistantSolver.AvailableSourceItem> availableItems = entity.collectAvailableItems(level, pos);
+        // 收集可用原料（内部 9 格 + 所有相邻外部容器）
+        List<AlloyAssistantSolver.AvailableSourceItem> availableItems = entity.collectAvailableItems(level, pos, crucible.getBlockPos());
 
-        // 计算 Crucible 剩余输入空位
+        // 构建全部已知合金配方索引（按产物流体映射），供中间件合金流体递归展开
+        Map<Fluid, AlloyRecipe> allRecipesByResult = new HashMap<>();
+        for (RecipeHolder<AlloyRecipe> holder : level.getRecipeManager().getAllRecipesFor(TFCRecipeTypes.ALLOY.get())) {
+            if (holder.value().result() != null) {
+                allRecipesByResult.put(holder.value().result(), holder.value());
+            }
+        }
+
+        // 计算 Crucible 剩余输入空位（每个槽位上限为 1 个物品）
         int availableSlots = entity.countAvailableCrucibleSlots(crucible);
 
         // 求解投料
         AlloyAssistantSolver.SolveResult result = AlloyAssistantSolver.solve(
-            crucibleAlloy,
+            crucibleFluids,
             targetRecipe,
             availableItems,
             entity.config.getTargetBatchAmount(),
-            availableSlots
+            availableSlots,
+            allRecipesByResult
         );
 
         entity.solverStatusOrdinal = result.status.ordinal();
@@ -181,7 +240,7 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
 
         if (result.status == AlloyAssistantSolver.SolveStatus.SUCCESS && !result.plannedItems.isEmpty()) {
             // 执行投料转移
-            boolean fedAny = entity.executeFeed(level, pos, crucible, result.plannedItems);
+            boolean fedAny = entity.executeFeed(level, crucible, result.plannedItems);
             entity.updateActiveState(state, fedAny);
             entity.setChanged();
         } else {
@@ -199,43 +258,114 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Nullable
-    private AlloyRecipe findTargetRecipe(Level level, ResourceLocation recipeId) {
-        Optional<RecipeHolder<?>> holder = level.getRecipeManager().byKey(recipeId);
-        if (holder.isPresent() && holder.get().value() instanceof AlloyRecipe alloyRecipe) {
-            return alloyRecipe;
+    private CrucibleBlockEntity findCrucible(Level level, BlockPos pos) {
+        BlockEntity below = level.getBlockEntity(pos.below());
+        if (below instanceof CrucibleBlockEntity crucible) {
+            return crucible;
+        }
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
+            if (neighbor instanceof CrucibleBlockEntity crucible) {
+                return crucible;
+            }
         }
         return null;
     }
 
-    /** 扫描内部槽位及上方连接的外部容器中的可用原料 */
-    private List<AlloyAssistantSolver.AvailableSourceItem> collectAvailableItems(Level level, BlockPos pos) {
+    @Nullable
+    private AlloyRecipe findTargetRecipe(Level level, ResourceLocation recipeId) {
+        if (recipeId == null) {
+            return null;
+        }
+        for (RecipeHolder<AlloyRecipe> holder : level.getRecipeManager().getAllRecipesFor(TFCRecipeTypes.ALLOY.get())) {
+            if (holder.id().equals(recipeId)) {
+                return holder.value();
+            }
+        }
+        return null;
+    }
+
+    /** 收集坩埚内所有金属成分（包括已熔化的液体和槽内待熔化的固体金属当量） */
+    private Map<Fluid, Integer> collectCrucibleFluids(CrucibleBlockEntity crucible) {
+        Map<Fluid, Integer> fluids = new HashMap<>();
+
+        // 1. 已熔化的液体金属
+        FluidAlloy crucibleAlloy = crucible.getAlloy();
+        if (crucibleAlloy != null && crucibleAlloy.getAmount() > 0) {
+            int totalMb = crucibleAlloy.getAmount();
+            Object2DoubleMap<Fluid> content = crucibleAlloy.getContent();
+
+            // 自适应量纲检测：判断 content 中的数值是实际毫桶数 mB、百分比（0~100）还是标准比例（0~1）
+            double sumValues = 0.0;
+            for (double val : content.values()) {
+                sumValues += val;
+            }
+
+            for (Object2DoubleMap.Entry<Fluid> entry : content.object2DoubleEntrySet()) {
+                double rawVal = entry.getDoubleValue();
+                int mb;
+                if (Math.abs(sumValues - totalMb) < 1.0) {
+                    // 数值本身即为各金属实际毫桶数 mB（各组分之和等于 totalMb）
+                    mb = (int) Math.round(rawVal);
+                } else if (Math.abs(sumValues - 100.0) < 1.0) {
+                    // 数值是百分比 0~100（各组分之和为 100）
+                    mb = (int) Math.round(rawVal / 100.0 * totalMb);
+                } else {
+                    // 数值是标准比例 0~1（各组分之和为 1.0）
+                    mb = (int) Math.round(rawVal * totalMb);
+                }
+
+                if (mb > 0) {
+                    fluids.put(entry.getKey(), fluids.getOrDefault(entry.getKey(), 0) + mb);
+                }
+            }
+        }
+
+        // 2. 坩埚输入槽中待熔化的固体物品
+        IItemHandlerModifiable crucibleInv = crucible.getInventory();
+        for (int i = CrucibleBlockEntity.SLOT_INPUT_START; i <= CrucibleBlockEntity.SLOT_INPUT_END; i++) {
+            ItemStack stack = crucibleInv.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                FluidStack fs = AlloyAssistantSolver.extractFluidOutput(stack);
+                if (!fs.isEmpty() && fs.getAmount() > 0) {
+                    int amount = fs.getAmount() * stack.getCount();
+                    fluids.put(fs.getFluid(), fluids.getOrDefault(fs.getFluid(), 0) + amount);
+                }
+            }
+        }
+
+        return fluids;
+    }
+
+    /** 扫描内部槽位及所有相邻外部容器中的可用原料 */
+    private List<AlloyAssistantSolver.AvailableSourceItem> collectAvailableItems(Level level, BlockPos pos, BlockPos cruciblePos) {
         List<AlloyAssistantSolver.AvailableSourceItem> list = new ArrayList<>();
 
         // 1. 扫描内部 9 格
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (!stack.isEmpty()) {
-                HeatingRecipe hr = AlloyAssistantSolver.getHeatingOutput(stack);
-                if (hr != null) {
-                    FluidStack fs = hr.assembleFluid(stack);
-                    if (!fs.isEmpty() && fs.getAmount() > 0) {
-                        list.add(new AlloyAssistantSolver.AvailableSourceItem(i, stack, fs.getFluid(), fs.getAmount(), true));
-                    }
+                FluidStack fs = AlloyAssistantSolver.extractFluidOutput(stack);
+                if (!fs.isEmpty() && fs.getAmount() > 0) {
+                    list.add(new AlloyAssistantSolver.AvailableSourceItem(i, stack, fs.getFluid(), fs.getAmount(), true, pos));
                 }
             }
         }
 
-        // 2. 扫描上方外部容器
-        IItemHandler topHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.above(), Direction.DOWN);
-        if (topHandler != null) {
-            for (int i = 0; i < topHandler.getSlots(); i++) {
-                ItemStack stack = topHandler.getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    HeatingRecipe hr = AlloyAssistantSolver.getHeatingOutput(stack);
-                    if (hr != null) {
-                        FluidStack fs = hr.assembleFluid(stack);
+        // 2. 扫描所有相邻外部容器（如上方、四周）
+        for (Direction dir : Direction.values()) {
+            BlockPos targetPos = pos.relative(dir);
+            if (targetPos.equals(cruciblePos)) {
+                continue;
+            }
+            IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, dir.getOpposite());
+            if (handler != null) {
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    ItemStack stack = handler.getStackInSlot(i);
+                    if (!stack.isEmpty()) {
+                        FluidStack fs = AlloyAssistantSolver.extractFluidOutput(stack);
                         if (!fs.isEmpty() && fs.getAmount() > 0) {
-                            list.add(new AlloyAssistantSolver.AvailableSourceItem(i, stack, fs.getFluid(), fs.getAmount(), false));
+                            list.add(new AlloyAssistantSolver.AvailableSourceItem(i, stack, fs.getFluid(), fs.getAmount(), false, targetPos));
                         }
                     }
                 }
@@ -250,7 +380,7 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
         int free = 0;
         for (int i = CrucibleBlockEntity.SLOT_INPUT_START; i <= CrucibleBlockEntity.SLOT_INPUT_END; i++) {
             ItemStack stack = crucibleInv.getStackInSlot(i);
-            if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) {
+            if (stack.isEmpty()) {
                 free++;
             }
         }
@@ -258,10 +388,8 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
     }
 
     /** 向 Crucible 输入槽转移物品 */
-    private boolean executeFeed(Level level, BlockPos pos, CrucibleBlockEntity crucible, List<AlloyAssistantSolver.PlannedFeedItem> plannedItems) {
+    private boolean executeFeed(Level level, CrucibleBlockEntity crucible, List<AlloyAssistantSolver.PlannedFeedItem> plannedItems) {
         IItemHandlerModifiable crucibleInv = crucible.getInventory();
-        IItemHandler topHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.above(), Direction.DOWN);
-
         boolean anyMoved = false;
 
         for (AlloyAssistantSolver.PlannedFeedItem item : plannedItems) {
@@ -271,37 +399,45 @@ public class AlloyAssistantBlockEntity extends BlockEntity implements MenuProvid
                 if (!inSlot.isEmpty() && ItemStack.isSameItemSameComponents(inSlot, item.itemSample)) {
                     int moveCount = Math.min(remainingToMove, inSlot.getCount());
                     ItemStack movingStack = inventory.extractItem(item.slotIndex, moveCount, false);
-                    ItemStack leftOver = insertIntoCrucible(crucibleInv, movingStack);
+                    ItemStack leftOver = insertIntoCrucible(crucible, crucibleInv, movingStack);
                     if (!leftOver.isEmpty()) {
-                        // 若未全部塞入则归还内部槽
                         inventory.insertItem(item.slotIndex, leftOver, false);
                     }
                     if (movingStack.getCount() > leftOver.getCount()) {
                         anyMoved = true;
                     }
                 }
-            } else if (topHandler != null) {
-                ItemStack inSlot = topHandler.getStackInSlot(item.slotIndex);
-                if (!inSlot.isEmpty() && ItemStack.isSameItemSameComponents(inSlot, item.itemSample)) {
-                    int moveCount = Math.min(remainingToMove, inSlot.getCount());
-                    ItemStack movingStack = topHandler.extractItem(item.slotIndex, moveCount, false);
-                    ItemStack leftOver = insertIntoCrucible(crucibleInv, movingStack);
-                    if (!leftOver.isEmpty()) {
-                        topHandler.insertItem(item.slotIndex, leftOver, false);
-                    }
-                    if (movingStack.getCount() > leftOver.getCount()) {
-                        anyMoved = true;
+            } else if (item.containerPos != null) {
+                IItemHandler sourceHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, item.containerPos, null);
+                if (sourceHandler != null && item.slotIndex < sourceHandler.getSlots()) {
+                    ItemStack inSlot = sourceHandler.getStackInSlot(item.slotIndex);
+                    if (!inSlot.isEmpty() && ItemStack.isSameItemSameComponents(inSlot, item.itemSample)) {
+                        int moveCount = Math.min(remainingToMove, inSlot.getCount());
+                        ItemStack movingStack = sourceHandler.extractItem(item.slotIndex, moveCount, false);
+                        ItemStack leftOver = insertIntoCrucible(crucible, crucibleInv, movingStack);
+                        if (!leftOver.isEmpty()) {
+                            sourceHandler.insertItem(item.slotIndex, leftOver, false);
+                        }
+                        if (movingStack.getCount() > leftOver.getCount()) {
+                            anyMoved = true;
+                        }
                     }
                 }
             }
         }
 
+        if (anyMoved) {
+            crucible.setChanged();
+            crucible.markForSync();
+        }
+
         return anyMoved;
     }
 
-    private ItemStack insertIntoCrucible(IItemHandlerModifiable crucibleInv, ItemStack stack) {
+    private ItemStack insertIntoCrucible(CrucibleBlockEntity crucible, IItemHandlerModifiable crucibleInv, ItemStack stack) {
         for (int i = CrucibleBlockEntity.SLOT_INPUT_START; i <= CrucibleBlockEntity.SLOT_INPUT_END; i++) {
             stack = crucibleInv.insertItem(i, stack, false);
+            crucible.setAndUpdateSlots(i);
             if (stack.isEmpty()) {
                 return ItemStack.EMPTY;
             }

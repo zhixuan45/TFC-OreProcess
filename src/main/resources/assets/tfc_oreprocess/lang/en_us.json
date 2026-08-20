@@ -21,6 +21,7 @@
   "gui.tfc_oreprocess.status.no_materials": "! Missing Raw Materials",
   "gui.tfc_oreprocess.status.insufficient": "! Insufficient Materials",
   "gui.tfc_oreprocess.status.crucible_full": "! Crucible Full",
+  "gui.tfc_oreprocess.status.waiting_melt": "~ Melting in Progress",
   "item.tfc_oreprocess.rocky_crushed_copper_ore": "Rocky Crushed Copper Ore",
   "item.tfc_oreprocess.rocky_crushed_gold_ore": "Rocky Crushed Gold Ore",
   "item.tfc_oreprocess.crushed_gold_ore": "Crushed Gold Ore",

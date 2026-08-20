@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:rocky_crushed_bauxite_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  15,
+                         "fluid":  "tfc:metal/aluminum"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  660
+}

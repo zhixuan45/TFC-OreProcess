@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:dirty_pile_osmium_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  5,
+                         "fluid":  "mekatfc:metal/osmium"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1540
+}

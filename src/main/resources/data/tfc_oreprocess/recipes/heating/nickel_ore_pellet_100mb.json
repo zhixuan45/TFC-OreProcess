@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:nickel_ore_pellet_100mb"
+                   },
+    "result_fluid":  {
+                         "amount":  100,
+                         "fluid":  "tfc:metal/nickel"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1453
+}

@@ -52,6 +52,7 @@ public class AlloyAssistantScreen extends AbstractContainerScreen<AlloyAssistant
         // 切换配方按钮
         btnPrevRecipe = this.addRenderableWidget(Button.builder(Component.literal("<"), b -> {
             if (!availableAlloyRecipes.isEmpty()) {
+                hasUserChangedRecipe = true;
                 selectedRecipeIndex = (selectedRecipeIndex - 1 + availableAlloyRecipes.size()) % availableAlloyRecipes.size();
                 syncConfigToServer();
             }
@@ -59,6 +60,7 @@ public class AlloyAssistantScreen extends AbstractContainerScreen<AlloyAssistant
 
         btnNextRecipe = this.addRenderableWidget(Button.builder(Component.literal(">"), b -> {
             if (!availableAlloyRecipes.isEmpty()) {
+                hasUserChangedRecipe = true;
                 selectedRecipeIndex = (selectedRecipeIndex + 1) % availableAlloyRecipes.size();
                 syncConfigToServer();
             }
@@ -104,22 +106,18 @@ public class AlloyAssistantScreen extends AbstractContainerScreen<AlloyAssistant
         ).bounds(leftPos + 8, topPos + 68, 56, 14).build());
     }
 
+    private boolean hasUserChangedRecipe = false;
+
     private void loadAlloyRecipes() {
         availableAlloyRecipes.clear();
         if (minecraft != null && minecraft.level != null) {
             List<RecipeHolder<AlloyRecipe>> list = minecraft.level.getRecipeManager().getAllRecipesFor(TFCRecipeTypes.ALLOY.get());
             availableAlloyRecipes.addAll(list);
 
-            // 还原当前方块实体已选定的配方
-            if (menu.getBlockEntity() != null && menu.getBlockEntity().getConfig().getTargetRecipeId() != null) {
-                ResourceLocation currentId = menu.getBlockEntity().getConfig().getTargetRecipeId();
-                for (int i = 0; i < availableAlloyRecipes.size(); i++) {
-                    if (availableAlloyRecipes.get(i).id().equals(currentId)) {
-                        selectedRecipeIndex = i;
-                        break;
-                    }
-                }
-            } else if (!availableAlloyRecipes.isEmpty() && selectedRecipeIndex < 0) {
+            int serverIdx = menu.getTargetRecipeIndex();
+            if (serverIdx >= 0 && serverIdx < availableAlloyRecipes.size()) {
+                selectedRecipeIndex = serverIdx;
+            } else if (!availableAlloyRecipes.isEmpty()) {
                 selectedRecipeIndex = 0;
             }
         }
@@ -183,7 +181,13 @@ public class AlloyAssistantScreen extends AbstractContainerScreen<AlloyAssistant
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // 更新按钮文本状态
+        // 若用户未手动切换过配方，自动与服务端同步的当前配方索引对齐
+        int serverIdx = menu.getTargetRecipeIndex();
+        if (!hasUserChangedRecipe && serverIdx >= 0 && serverIdx < availableAlloyRecipes.size()) {
+            selectedRecipeIndex = serverIdx;
+        }
+
+        // 实时更新按钮文本状态
         btnToggleAutoFeed.setMessage(getAutoFeedText());
         btnCycleRedstone.setMessage(getRedstoneText());
         btnAdjustBatch.setMessage(Component.literal(menu.getTargetBatchAmount() + "mB"));
@@ -233,9 +237,11 @@ public class AlloyAssistantScreen extends AbstractContainerScreen<AlloyAssistant
             case NO_MATERIALS -> Component.translatable("gui.tfc_oreprocess.status.no_materials");
             case INSUFFICIENT_MATERIALS -> Component.translatable("gui.tfc_oreprocess.status.insufficient");
             case CRUCIBLE_FULL -> Component.translatable("gui.tfc_oreprocess.status.crucible_full");
+            case WAITING_FOR_MELT -> Component.translatable("gui.tfc_oreprocess.status.waiting_melt");
         };
         int statusColor = switch (menu.getSolverStatus()) {
             case SUCCESS, ALREADY_MATCHED -> 0x2E7D32;
+            case WAITING_FOR_MELT -> 0x1976D2;
             case IMPURITY_DETECTED -> 0xC62828;
             default -> 0xEF6C00;
         };

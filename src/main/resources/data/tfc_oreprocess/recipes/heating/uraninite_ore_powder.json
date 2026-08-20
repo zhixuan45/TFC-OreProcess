@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:uraninite_ore_powder"
+                   },
+    "result_fluid":  {
+                         "amount":  5,
+                         "fluid":  "tfc:metal/uranium"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1132
+}

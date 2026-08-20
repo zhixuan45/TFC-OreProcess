@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:bauxite_ore_powder"
+                   },
+    "result_fluid":  {
+                         "amount":  5,
+                         "fluid":  "tfc:metal/aluminum"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  660
+}

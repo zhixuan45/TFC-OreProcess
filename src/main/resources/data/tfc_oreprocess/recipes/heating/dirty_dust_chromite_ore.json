@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:dirty_dust_chromite_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  20,
+                         "fluid":  "tfc:metal/chromium"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1907
+}

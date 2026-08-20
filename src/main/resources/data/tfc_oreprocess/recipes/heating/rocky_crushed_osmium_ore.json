@@ -1,0 +1,11 @@
+﻿{
+    "ingredient":  {
+                       "item":  "tfc_oreprocess:rocky_crushed_osmium_ore"
+                   },
+    "result_fluid":  {
+                         "amount":  15,
+                         "fluid":  "mekatfc:metal/osmium"
+                     },
+    "type":  "tfc:heating",
+    "temperature":  1540
+}
